@@ -111,6 +111,17 @@ export default function Home() {
     );
   }
 
+  // Positive qty = items going out (sale), so stock goes down; pass negative
+  // qty to give stock back (undo / delete / edit reducing a quantity).
+  function adjustStockForItems(items) {
+    setProducts((ps) =>
+      ps.map((p) => {
+        const it = items.find((i) => i.id === p.id);
+        return it ? { ...p, stock: Math.max(0, p.stock - it.qty) } : p;
+      })
+    );
+  }
+
   function completeSale() {
     const ids = Object.keys(cart).filter((id) => cart[id] > 0);
     if (!ids.length) return;
@@ -127,6 +138,7 @@ export default function Home() {
       total
     };
     setTransactions((t) => [txn, ...t]);
+    adjustStockForItems(items);
     setCart({});
     setBuyerName("");
     setSheetOpen(false);
@@ -135,11 +147,16 @@ export default function Home() {
   }
 
   function undoLast() {
+    if (!transactions.length) return;
+    const removed = transactions[0];
     setTransactions((t) => t.slice(1));
+    adjustStockForItems(removed.items.map((it) => ({ ...it, qty: -it.qty })));
   }
 
   function deleteTxn(id) {
-    setTransactions((t) => t.filter((x) => x.id !== id));
+    const t = transactions.find((x) => x.id === id);
+    setTransactions((ts) => ts.filter((x) => x.id !== id));
+    if (t) adjustStockForItems(t.items.map((it) => ({ ...it, qty: -it.qty })));
   }
 
   function openEdit(id) {
@@ -169,6 +186,7 @@ export default function Home() {
       closeEdit();
       return;
     }
+    const original = transactions.find((t) => t.id === editingTxnId);
     const total = editDraft.items.reduce((sum, it) => sum + it.price * it.qty, 0);
     setTransactions((ts) =>
       ts.map((t) =>
@@ -177,6 +195,17 @@ export default function Home() {
           : t
       )
     );
+    if (original) {
+      // Reconcile stock for the quantity change on each item: more sold than
+      // before takes further stock, less sold gives stock back.
+      const ids = new Set([...original.items.map((it) => it.id), ...editDraft.items.map((it) => it.id)]);
+      const deltas = Array.from(ids).map((id) => {
+        const origQty = original.items.find((it) => it.id === id)?.qty || 0;
+        const newQty = editDraft.items.find((it) => it.id === id)?.qty || 0;
+        return { id, qty: newQty - origQty };
+      });
+      adjustStockForItems(deltas);
+    }
     closeEdit();
   }
 
