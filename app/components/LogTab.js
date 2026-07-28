@@ -1,6 +1,6 @@
 import { fmt } from "./icons";
 
-export default function LogTab({ transactions, onUndo, onEdit, onDelete }) {
+export default function LogTab({ transactions, onUndo, onEdit, onDelete, onResetClick }) {
   const noTx = transactions.length === 0;
 
   return (
@@ -48,6 +48,12 @@ export default function LogTab({ transactions, onUndo, onEdit, onDelete }) {
           );
         })
       )}
+
+      <div className="reset-row">
+        <button className="btn-reset" onClick={onResetClick}>
+          Reset
+        </button>
+      </div>
     </div>
   );
 }

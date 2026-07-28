@@ -8,6 +8,7 @@ import CartPanel from "./components/CartPanel";
 import LogTab from "./components/LogTab";
 import ExportTab from "./components/ExportTab";
 import EditModal from "./components/EditModal";
+import ResetModal from "./components/ResetModal";
 import { DEFAULT_PRODUCTS } from "./components/icons";
 import { buildPdf, pdfMoney, padCol } from "./lib/pdf";
 
@@ -25,6 +26,7 @@ export default function Home() {
   const [editDraft, setEditDraft] = useState(null);
   const [stampVisible, setStampVisible] = useState(false);
   const [online, setOnline] = useState(true);
+  const [resetOpen, setResetOpen] = useState(false);
 
   // Load persisted state on mount (guarded so SSR/client first render match).
   useEffect(() => {
@@ -158,6 +160,17 @@ export default function Home() {
     const t = transactions.find((x) => x.id === id);
     setTransactions((ts) => ts.filter((x) => x.id !== id));
     if (t) adjustStockForItems(t.items.map((it) => ({ ...it, qty: -it.qty })));
+  }
+
+  function resetAll() {
+    setProducts(DEFAULT_PRODUCTS);
+    setTransactions([]);
+    setCart({});
+    setBuyerName("");
+    setEditingTxnId(null);
+    setEditDraft(null);
+    setSheetOpen(false);
+    setResetOpen(false);
   }
 
   function openEdit(id) {
@@ -345,6 +358,7 @@ export default function Home() {
             onUndo={undoLast}
             onEdit={openEdit}
             onDelete={deleteTxn}
+            onResetClick={() => setResetOpen(true)}
           />
         )}
 
@@ -364,6 +378,8 @@ export default function Home() {
         onCancel={closeEdit}
         onSave={saveEdit}
       />
+
+      <ResetModal open={resetOpen} onCancel={() => setResetOpen(false)} onConfirm={resetAll} />
 
       {stampVisible && (
         <div className="stamp">

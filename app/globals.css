@@ -353,6 +353,7 @@ main.body {
   max-height: 78vh;
   border-radius: 14px 14px 0 0;
   overflow: hidden;
+  z-index: 10;
 }
 
 .sheet-toggle {
@@ -573,6 +574,23 @@ main.body {
   padding: 28px 6px;
 }
 
+.reset-row {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 8px;
+  margin-top: auto;
+}
+
+.btn-reset {
+  min-height: 44px;
+  padding: 0 20px;
+  border: 1.5px solid var(--danger);
+  border-radius: 8px;
+  background: var(--danger-bg);
+  color: var(--danger);
+  font: 700 13px var(--font-head), sans-serif;
+}
+
 .log-entry {
   background: var(--card);
   border: 1.5px solid var(--border);
@@ -741,6 +759,13 @@ table.preview td {
   color: var(--ink);
 }
 
+.modal-body-text {
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
 .edit-row {
   display: flex;
   align-items: center;
@@ -805,6 +830,16 @@ table.preview td {
   border-radius: 8px;
   background: var(--accent);
   color: var(--accent-ink);
+  font: 700 12px var(--font-head), sans-serif;
+}
+
+.btn-reset-confirm {
+  min-height: 40px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 8px;
+  background: var(--danger);
+  color: var(--card);
   font: 700 12px var(--font-head), sans-serif;
 }
 
