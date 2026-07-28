@@ -9,6 +9,7 @@ import LogTab from "./components/LogTab";
 import ExportTab from "./components/ExportTab";
 import EditModal from "./components/EditModal";
 import { DEFAULT_PRODUCTS } from "./components/icons";
+import { buildPdf, pdfMoney, padCol } from "./lib/pdf";
 
 const STORAGE_KEY = "popupSalePOS:v1";
 
@@ -229,6 +230,53 @@ export default function Home() {
     URL.revokeObjectURL(url);
   }
 
+  function downloadPdf() {
+    const col = { time: 10, product: 27, qty: 5, unit: 15, total: 15 };
+    const header =
+      padCol("Time", col.time) +
+      padCol("Product", col.product) +
+      padCol("Qty", col.qty, true) +
+      padCol("Unit", col.unit, true) +
+      padCol("Total", col.total, true);
+    const rowWidth = header.length;
+    const rule = "-".repeat(rowWidth);
+
+    const lines = [
+      "POPUP SALE -- END OF DAY REPORT",
+      "Generated " + new Date().toLocaleString(),
+      "",
+      `Sales: ${transactions.length}    Items: ${itemsSold}    Revenue: ${pdfMoney(revenue)}`,
+      "",
+      header,
+      rule
+    ];
+    transactions.forEach((t) => {
+      const time = new Date(t.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      t.items.forEach((it) => {
+        lines.push(
+          padCol(time, col.time) +
+            padCol(it.name, col.product) +
+            padCol(it.qty, col.qty, true) +
+            padCol(pdfMoney(it.price), col.unit, true) +
+            padCol(pdfMoney(it.price * it.qty), col.total, true)
+        );
+      });
+    });
+    lines.push(rule);
+    lines.push(("TOTAL " + pdfMoney(revenue)).padStart(rowWidth));
+
+    const bytes = buildPdf(lines);
+    const blob = new Blob([bytes], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "popup-sales-" + new Date().toISOString().slice(0, 10) + ".pdf";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
   const revenue = transactions.reduce((sum, t) => sum + t.total, 0);
   const itemsSold = transactions.reduce(
     (sum, t) => sum + t.items.reduce((a, it) => a + it.qty, 0),
@@ -301,7 +349,11 @@ export default function Home() {
         )}
 
         {view === "export" && (
-          <ExportTab transactions={transactions} onDownloadCsv={downloadCsv} />
+          <ExportTab
+            transactions={transactions}
+            onDownloadCsv={downloadCsv}
+            onDownloadPdf={downloadPdf}
+          />
         )}
       </main>
 

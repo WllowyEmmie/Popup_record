@@ -11,6 +11,10 @@ export default function LogTab({ transactions, onUndo, onEdit, onDelete }) {
           Undo last sale
         </button>
       </div>
+      <div className="tabpage-desc">
+        Every sale you've made today, newest first — edit an entry, delete a mistake, or undo the
+        most recent sale.
+      </div>
 
       {noTx ? (
         <div className="log-empty">No sales logged yet.</div>

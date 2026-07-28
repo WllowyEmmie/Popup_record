@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
 import { fmt } from "./icons";
 
 export default function CartPanel({
@@ -16,11 +18,31 @@ export default function CartPanel({
     ? `${cartCount} item${cartCount > 1 ? "s" : ""} · ${fmt(cartTotal)}`
     : "Ticket empty";
 
+  const panelRef = useRef(null);
+  const prevCount = useRef(0);
+
+  // Wiggles whenever an item is added, and also on mount — which covers
+  // navigating back to the Sale tab, since this panel remounts fresh then.
+  useEffect(() => {
+    if (cartCount > prevCount.current && panelRef.current) {
+      gsap.killTweensOf(panelRef.current);
+      gsap
+        .timeline()
+        .to(panelRef.current, { rotate: -6, x: -7, duration: 0.07, ease: "power1.out" })
+        .to(panelRef.current, { rotate: 6, x: 7, duration: 0.12, ease: "power1.inOut" })
+        .to(panelRef.current, { rotate: -5, x: -5, duration: 0.12, ease: "power1.inOut" })
+        .to(panelRef.current, { rotate: 4, x: 4, duration: 0.11, ease: "power1.inOut" })
+        .to(panelRef.current, { rotate: -2, x: -2, duration: 0.1, ease: "power1.inOut" })
+        .to(panelRef.current, { rotate: 0, x: 0, duration: 0.09, ease: "power1.inOut" });
+    }
+    prevCount.current = cartCount;
+  }, [cartCount]);
+
   return (
-    <div className="cart-panel">
+    <div className="cart-panel" ref={panelRef}>
       <button className="sheet-toggle" onClick={onToggleSheet}>
         <span>{sheetSummary}</span>
-        <span>{sheetOpen ? "▾" : "▸"}</span>
+        <span className="toggle-arrow">{sheetOpen ? "▾" : "▸"}</span>
       </button>
       <div className={"cart-body scroll" + (sheetOpen ? "" : " collapsed")}>
         <div className="ticket-title">Ticket</div>

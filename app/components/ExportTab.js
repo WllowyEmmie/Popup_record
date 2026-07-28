@@ -1,6 +1,6 @@
 import { fmt } from "./icons";
 
-export default function ExportTab({ transactions, onDownloadCsv }) {
+export default function ExportTab({ transactions, onDownloadCsv, onDownloadPdf }) {
   const revenue = transactions.reduce((sum, t) => sum + t.total, 0);
   const itemsSold = transactions.reduce(
     (sum, t) => sum + t.items.reduce((a, it) => a + it.qty, 0),
@@ -19,16 +19,25 @@ export default function ExportTab({ transactions, onDownloadCsv }) {
   return (
     <div className="tabpage scroll">
       <div className="tabpage-title">End-of-day Export</div>
+      <div className="tabpage-desc">
+        Download today's sales as a spreadsheet or PDF to close out your books — a preview of
+        every line is below.
+      </div>
       <div className="badges">
         <div className="badge blue">{transactions.length} SALES</div>
         <div className="badge green">{itemsSold} ITEMS</div>
       </div>
       <div className="export-note">
-        Every line item — time, product, quantity, unit price, total — as a CSV file.
+        Every line item — time, product, quantity, unit price, total.
       </div>
-      <button className="btn-csv" disabled={noTx} onClick={onDownloadCsv}>
-        Download CSV
-      </button>
+      <div className="export-actions">
+        <button className="btn-csv" disabled={noTx} onClick={onDownloadCsv}>
+          Download CSV
+        </button>
+        <button className="btn-csv" disabled={noTx} onClick={onDownloadPdf}>
+          Download PDF
+        </button>
+      </div>
 
       {rows.length ? (
         <table className="preview">

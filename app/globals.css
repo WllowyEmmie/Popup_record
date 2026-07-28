@@ -137,26 +137,33 @@ button:focus-visible {
 }
 
 .tabs {
+  position: relative;
   display: flex;
-  padding: 0 14px 10px;
+  padding: 0 14px 13px;
   gap: 4px;
   flex: none;
 }
 
 .tab {
   flex: 1;
-  min-height: 36px;
-  border: 1.5px solid var(--border);
-  border-radius: 7px;
-  background: #efede6;
-  color: var(--ink);
-  font: 700 12px var(--font-head), sans-serif;
+  min-height: 40px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font: 700 16px var(--font-head), sans-serif;
 }
 
 .tab.active {
+  color: var(--ink);
+}
+
+.tab-indicator {
+  position: absolute;
+  bottom: 5px;
+  height: 3px;
+  border-radius: 999px;
   background: var(--accent);
-  color: var(--accent-ink);
-  border-color: var(--accent);
+  transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1), width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 main.body {
@@ -180,9 +187,9 @@ main.body {
   flex: 1;
   overflow: auto;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px 10px;
-  padding: 16px 14px 200px;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  padding: 16px 14px 100px;
   align-content: start;
 }
 
@@ -190,10 +197,11 @@ main.body {
   background: var(--card);
   border: 1.5px solid var(--border);
   border-radius: 10px;
-  padding: 12px;
+  padding: 18px;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
   position: relative;
 }
 
@@ -233,6 +241,8 @@ main.body {
   display: flex;
   align-items: flex-start;
   gap: 9px;
+  flex: 1;
+  min-width: 150px;
 }
 
 .p-name {
@@ -250,8 +260,8 @@ main.body {
 .p-stockrow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 6px;
+  flex: none;
 }
 
 .p-stockrow .label {
@@ -292,12 +302,12 @@ main.body {
 .p-actions {
   display: flex;
   gap: 6px;
+  flex: none;
 }
 
 .btn-remove {
-  flex: 1;
   min-height: 44px;
-  padding: 0 8px;
+  padding: 0 12px;
   border: 1.5px solid var(--danger);
   border-radius: 8px;
   background: var(--danger-bg);
@@ -306,9 +316,8 @@ main.body {
 }
 
 .btn-add {
-  flex: 1;
   min-height: 44px;
-  padding: 0 8px;
+  padding: 0 16px;
   border: none;
   border-radius: 8px;
   background: var(--accent);
@@ -344,7 +353,6 @@ main.body {
   max-height: 78vh;
   border-radius: 14px 14px 0 0;
   overflow: hidden;
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .sheet-toggle {
@@ -353,18 +361,25 @@ main.body {
   border-bottom: 1.5px dashed var(--border);
   background: var(--accent);
   color: var(--accent-ink);
-  padding: 13px 16px;
+  padding: 18px 18px calc(18px + env(safe-area-inset-bottom));
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font: 700 13px var(--font-head), sans-serif;
+  font: 700 15px var(--font-head), sans-serif;
+}
+
+.toggle-arrow {
+  font-size: 25px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
 }
 
 .cart-body {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 14px;
+  padding: 14px 14px calc(14px + env(safe-area-inset-bottom));
   flex: 1;
   overflow: auto;
 }
@@ -454,17 +469,17 @@ main.body {
 }
 
 .total-row .value {
-  font: 700 20px var(--font-head), sans-serif;
+  font: 700 22px var(--font-head), sans-serif;
   color: var(--accent);
 }
 
 .btn-complete {
-  min-height: 48px;
+  min-height: 56px;
   border: none;
   border-radius: 8px;
   background: var(--accent);
   color: var(--accent-ink);
-  font: 700 14px var(--font-head), sans-serif;
+  font: 700 16px var(--font-head), sans-serif;
 }
 
 .btn-complete:disabled {
@@ -473,31 +488,41 @@ main.body {
 
 @media (min-width: 760px) {
   .app {
-    max-width: 960px;
-  }
-  .sale-layout {
-    flex-direction: row;
+    max-width: 760px;
   }
   .catalog {
-    padding: 14px 18px 14px;
+    padding: 14px 18px 100px;
+    gap: 14px;
   }
-  .cart-panel {
-    position: static;
-    width: 280px;
-    max-width: none;
-    margin: 0;
-    flex: none;
-    border-left: 1.5px solid var(--border);
-    border-radius: 0;
-    box-shadow: none;
-    max-height: none;
-    padding-bottom: 0;
+  .p-card {
+    padding: 24px;
+    gap: 14px 18px;
   }
-  .sheet-toggle {
-    display: none;
+  .p-icon {
+    width: 46px;
+    height: 46px;
   }
-  .cart-body.collapsed {
-    display: flex;
+  .p-name {
+    font-size: 16px;
+  }
+  .p-price {
+    font-size: 15px;
+  }
+  .p-stockrow .label {
+    font-size: 11px;
+  }
+  .stock-val {
+    font-size: 13px;
+  }
+  .step-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 15px;
+  }
+  .btn-remove,
+  .btn-add {
+    min-height: 48px;
+    font-size: 14px;
   }
 }
 
@@ -519,6 +544,14 @@ main.body {
 .tabpage-title {
   font: 700 15px var(--font-head), sans-serif;
   color: var(--ink);
+}
+
+.tabpage-desc {
+  font-weight: 400;
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-top: -6px;
 }
 
 .btn-ghost {
@@ -633,7 +666,13 @@ main.body {
   line-height: 1.5;
 }
 
+.export-actions {
+  display: flex;
+  gap: 8px;
+}
+
 .btn-csv {
+  flex: 1;
   min-height: 48px;
   border: none;
   border-radius: 8px;
